@@ -1,16 +1,29 @@
-# gari_zone
+# Garizone - FastAPI Backend (Development)
 
-A new Flutter project.
+## Setup (local)
+1. Create virtual env:
+   python -m venv venv
+   source venv/bin/activate   # windows: venv\Scripts\activate
 
-## Getting Started
+2. Install:
+   pip install -r requirements.txt
 
-This project is a starting point for a Flutter application.
+3. Copy .env.example to .env and set values:
+   cp .env.example .env
+   # edit .env: set MONGODB_URI & JWT_SECRET
 
-A few resources to get you started if this is your first Flutter project:
+4. Start MongoDB (local) or use Atlas and set MONGODB_URI.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+5. Seed sample data (optional):
+   python scripts/seed_cars.py
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+6. Run app:
+   uvicorn app.main:app --reload --port 8000
+
+7. Test endpoints:
+   - POST /auth/register
+   - POST /auth/login
+   - POST /ai/chat
+   - GET /cars/search?query=civic
+
+Static images uploaded to `app/static/` served at `/static/<filename>`
