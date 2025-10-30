@@ -12,35 +12,49 @@ class FavoritesScreen extends StatelessWidget {
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
     final List<CarModel> favorites = favoritesProvider.favorites;
 
-    if (favorites.isEmpty) {
-      return const Center(child: Text("No favorites added yet."));
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: favorites.length,
-      itemBuilder: (context, index) {
-        final car = favorites[index];
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.favorite, color: Colors.red),
-            title: Text(car.name),
-            subtitle: Text("${car.brand} • ${car.year}"),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => favoritesProvider.removeFavorite(car.id),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Favorites'),
+        centerTitle: true,
+      ),
+      body: favorites.isEmpty
+          ? const Center(
+              child: Text(
+                "No favorites added yet.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: favorites.length,
+              itemBuilder: (context, index) {
+                final car = favorites[index];
+                return Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: const Icon(Icons.favorite, color: Colors.red),
+                    title: Text(
+                      car.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(car.brand),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                      onPressed: () => favoritesProvider.removeFavorite(car.id),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CarDetailsScreen(car: car),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CarDetailsScreen(car: car),
-                ),
-              );
-            },
-          ),
-        );
-      },
     );
   }
 }

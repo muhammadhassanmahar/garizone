@@ -5,6 +5,7 @@ class CarModel {
   final String price;
   final String imageUrl;
   final String description;
+  final String year; // ✅ Added missing field
 
   CarModel({
     required this.id,
@@ -13,19 +14,23 @@ class CarModel {
     required this.price,
     required this.imageUrl,
     required this.description,
+    required this.year,
   });
 
+  /// ✅ Factory constructor for creating an instance from JSON
   factory CarModel.fromJson(Map<String, dynamic> json) {
     return CarModel(
-      id: json["_id"] ?? "",
-      name: json["name"] ?? "",
-      brand: json["brand"] ?? "",
-      price: json["price"] ?? "",
-      imageUrl: json["image_url"] ?? "",
-      description: json["description"] ?? "",
+      id: json["_id"]?.toString() ?? "",
+      name: json["name"]?.toString() ?? "",
+      brand: json["brand"]?.toString() ?? "",
+      price: json["price"]?.toString() ?? "",
+      imageUrl: json["image_url"]?.toString() ?? "",
+      description: json["description"]?.toString() ?? "",
+      year: json["year"]?.toString() ?? "", // ✅ Safely handles missing year
     );
   }
 
+  /// ✅ Converts the model back to JSON
   Map<String, dynamic> toJson() {
     return {
       "_id": id,
@@ -34,6 +39,7 @@ class CarModel {
       "price": price,
       "image_url": imageUrl,
       "description": description,
+      "year": year,
     };
   }
 }
