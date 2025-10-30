@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import 'home_screen.dart';
 import 'register_screen.dart';
+import '../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,22 +12,32 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool loading = false;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool isLoading = false;
 
   Future<void> _login() async {
-    setState(() => loading = true);
+    setState(() => isLoading = true);
     try {
-      await Provider.of<AuthProvider>(context, listen: false)
-          .login(emailController.text, passwordController.text);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Invalid credentials")),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
-    setState(() => loading = false);
   }
 
   @override
@@ -35,31 +45,33 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
-              controller: emailController,
+              controller: _emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
             TextField(
-              controller: passwordController,
+              controller: _passwordController,
               decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: loading ? null : _login,
-              child: loading
-                  ? const CircularProgressIndicator()
+              onPressed: isLoading ? null : _login,
+              child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
                   : const Text("Login"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                );
               },
-              child: const Text("Create new account"),
+              child: const Text("Create an account"),
             )
           ],
         ),

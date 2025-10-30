@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
+import 'auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,35 +12,38 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initApp();
+    _goToNext();
   }
 
-  Future<void> _initApp() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    await auth.checkAuth();
+  Future<void> _goToNext() async {
     await Future.delayed(const Duration(seconds: 2));
-
-    if (auth.isLoggedIn) {
+    if (mounted) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.blueAccent,
       body: Center(
-        child: Text(
-          "Garizone",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.directions_car, color: Colors.white, size: 100),
+            SizedBox(height: 20),
+            Text(
+              "Garizone",
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ],
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'login_screen.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,26 +10,31 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  bool loading = false;
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool isLoading = false;
 
   Future<void> _register() async {
-    setState(() => loading = true);
+    setState(() => isLoading = true);
     try {
-      await Provider.of<AuthProvider>(context, listen: false)
-          .register(nameController.text, emailController.text, passwordController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration successful! Please log in.")));
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.register(
+        _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (success && mounted) {
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration failed")),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
-    setState(() => loading = false);
   }
 
   @override
@@ -38,17 +42,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Register")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: "Name")),
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: passwordController, decoration: const InputDecoration(labelText: "Password"), obscureText: true),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: "Name"),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: "Email"),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: "Password"),
+              obscureText: true,
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: loading ? null : _register,
-              child: loading
-                  ? const CircularProgressIndicator()
+              onPressed: isLoading ? null : _register,
+              child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
                   : const Text("Register"),
             ),
           ],
