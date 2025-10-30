@@ -12,3 +12,4 @@ db = client[settings.DB_NAME]
 users_collection = db["users"]
 cars_collection = db["cars"]
 chats_collection = db["chats"]
+favorites_collection = db["favorites"]  # ✅ add this line
